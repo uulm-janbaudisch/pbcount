@@ -1,45 +1,33 @@
-# need to use CLANG with apple silicon build in, otherwise linker error missing arm instructions etc..
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.30)
 
-PROJECT(cmake_pbcount)
+project(pbcount VERSION 1.0.0 LANGUAGES CXX)
 
-SET(CMAKE_CXX_STANDARD 14)
-SET(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-IF(APPLE)
-  # apple machines cannot static compile because lack of system files, modify directories below if necessary
-  SET(CMAKE_CXX_FLAGS "-g -Ofast")
-  LINK_DIRECTORIES(/opt/homebrew/lib)
-  INCLUDE_DIRECTORIES(/opt/homebrew/include)
-ELSE()
-  SET(CMAKE_CXX_FLAGS "-g -Ofast -static")
-ENDIF()
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cudd EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cxxopts EXCLUDE_FROM_ALL)
 
-SET(lib_dir ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-SET(lib_tar ${lib_dir}.tar)
-SET(cudd_dir ${lib_dir}/cudd-3.0.0)
+find_package(Boost REQUIRED)
 
-ADD_CUSTOM_COMMAND(
-  OUTPUT ${lib_dir}
-  DEPENDS ${lib_tar}
-  COMMAND tar -xf ${lib_tar} && touch ${lib_dir} && cd ${cudd_dir} && ./configure --enable-silent-rules --enable-obj && make
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/interface)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cudd/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cxxopts/include)
+include_directories(${Boost_INCLUDE_DIRS})
+
+add_library(core STATIC
+  src/implementation/counter.cpp
+  src/implementation/formula.cpp
+  src/implementation/graph.cpp
+  src/implementation/interactive.cpp
+  src/implementation/join.cpp
+  src/implementation/pbformula.cpp
+  src/implementation/util.cpp
+  src/implementation/visual.cpp
 )
 
-LINK_DIRECTORIES(${cudd_dir}/cudd/.libs)
+add_executable(pbcount src/implementation/main.cpp)
 
-INCLUDE_DIRECTORIES(${cudd_dir})
-INCLUDE_DIRECTORIES(${cudd_dir}/cudd)
-INCLUDE_DIRECTORIES(${cudd_dir}/epd)
-INCLUDE_DIRECTORIES(${cudd_dir}/mtr)
-INCLUDE_DIRECTORIES(${cudd_dir}/st)
+target_link_libraries(pbcount core cudd::cudd cxxopts::cxxopts)
 
-INCLUDE_DIRECTORIES(${lib_dir})
-
-INCLUDE_DIRECTORIES(src/interface)
-
-FILE(GLOB cpp_files "src/implementation/*.cpp")
-
-ADD_EXECUTABLE(pbcount ${cpp_files} ${lib_dir})
-
-TARGET_LINK_LIBRARIES(pbcount cudd)
+install(TARGETS pbcount)

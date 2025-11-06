@@ -7,12 +7,14 @@
 
 #include "../interface/counter.hpp"
 
+#include "../../cudd/src/cuddInt.h"
+
 /* namespaces *****************************************************************/
 
 /* namespace dd ***************************************************************/
 
 Float diagram::getTerminalValue(const ADD &terminal) {
-  DdNode *node = terminal.getNode();
+  const DdNode *node = terminal.getNode();
   return (node -> type).value;
 }
 

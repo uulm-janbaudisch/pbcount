@@ -8,7 +8,7 @@
 
 #include <limits>
 
-#include "../../lib/cxxopts.hpp"
+#include "cxxopts.hpp"
 
 #include "counter.hpp"
 #include "pbformula.hpp"
