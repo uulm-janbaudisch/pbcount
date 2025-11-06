@@ -18,11 +18,9 @@ stdenv.mkDerivation {
 
   meta = {
     mainProgram = "pbcount";
-    description = "pseudo boolean counter based on addmc";
-    # TODO
-    homepage = "https://github.com/SoftVarE-Group/d4v2";
-    # TODO
-    license = lib.licenses.lgpl21Plus;
+    description = "Pseudo boolean counter based on addmc";
+    homepage = "https://github.com/grab/pbcount";
+    license = lib.licenses.mit;
     platforms = lib.platforms.unix;
   };
 }

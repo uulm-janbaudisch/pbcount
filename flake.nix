@@ -1,5 +1,5 @@
 {
-  description = "pseudo boolean counter based on addmc";
+  description = "Pseudo boolean counter based on addmc";
 
   inputs = {
     self.submodules = true;
@@ -21,7 +21,7 @@
     {
       formatter = lib.genAttrs systems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
       packages = lib.genAttrs systems (system: {
-        default = nixpkgs.legacyPackages.${system}.callPackage ./default.nix { };
+        default = nixpkgs.legacyPackages.${system}.pkgsStatic.callPackage ./default.nix { };
       });
     };
 }
