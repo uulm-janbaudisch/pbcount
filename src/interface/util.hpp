@@ -23,8 +23,7 @@
 
 #include "pbclause.hpp"
 
-#include "../../lib/cudd-3.0.0/cplusplus/cuddObj.hh"
-#include "../../lib/cudd-3.0.0/cudd/cuddInt.h"
+#include "cudd/cuddObj.hh"
 
 /* uses ***********************************************************************/
 
