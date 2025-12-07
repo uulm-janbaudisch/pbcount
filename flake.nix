@@ -20,8 +20,29 @@
     in
     {
       formatter = lib.genAttrs systems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
-      packages = lib.genAttrs systems (system: {
-        default = nixpkgs.legacyPackages.${system}.callPackage ./default.nix { };
-      });
+      packages = lib.genAttrs systems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          default = pkgs.callPackage ./default.nix { };
+
+          container = nixpkgs.legacyPackages.${system}.dockerTools.buildLayeredImage {
+            name = "pbcount";
+            contents = [
+              self.packages.${system}.default
+              pkgs.time
+            ];
+            config = {
+              Entrypoint = [ "/bin/pbcount" ];
+              Labels = {
+                "org.opencontainers.image.source" = "https://github.com/uulm-janbaudisch/pbcount";
+                "org.opencontainers.image.description" = "Pseudo boolean counter based on addmc";
+              };
+            };
+          };
+        }
+      );
     };
 }
