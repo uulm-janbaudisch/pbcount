@@ -14,19 +14,14 @@ jobs:
           - double: x86_64-linux
             runner: ubuntu-24.04
           - double: x86_64-darwin
-            runner: macos-13
+            runner: macos-15-intel
           - double: aarch64-darwin
             runner: macos-15
     runs-on: ${{ matrix.target.runner }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Nix
         uses: cachix/install-nix-action@v31
       - name: Build
         run: nix build -L
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: pbcount-${{ matrix.target.double }}
-          path: result
